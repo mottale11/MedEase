@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Settings - MedEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background-color: #007BFF;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            justify-content: space-between;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #666;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: #f8f9fa;
+            color: #007BFF;
+        }
+
+        .nav-button.active {
+            background: #e3f2fd;
+            color: #007BFF;
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-title {
+            color: #2c3e50;
+        }
+
+        .profile-picture-container {
+            text-align: center;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+
+        .upload-btn {
+            background: #007BFF;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .upload-btn:hover {
+            background: #0056b3;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .save-btn:hover {
+            background: #218838;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-picture-container {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Profile Settings</h1>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="patient-dashboard.html">Dashboard</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <button class="nav-button active" onclick="showTab('personal-info')">
+                <i class="fas fa-user"></i>
+                Personal Information
+            </button>
+            <button class="nav-button" onclick="showTab('medical-history')">
+                <i class="fas fa-notes-medical"></i>
+                Medical History
+            </button>
+            <button class="nav-button" onclick="showTab('change-password')">
+                <i class="fas fa-lock"></i>
+                Change Password
+            </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Personal Information Tab -->
+            <div id="personal-info" class="tab-content active">
+                <div class="profile-header">
+                    <h2 class="profile-title">Personal Information</h2>
+                    <div class="profile-picture-container">
+                        <img src="default-avatar.png" alt="Profile Picture" class="profile-picture" id="profile-image">
+                        <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+                        <button class="upload-btn" onclick="document.getElementById('profile-upload').click()">
+                            <i class="fas fa-camera"></i> Change Photo
+                        </button>
+                    </div>
+                </div>
+
+                <form id="personal-info-form">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="fullname" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="dob">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" id="address" rows="3" placeholder="Enter your address"></textarea>
+                    </div>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Medical History Tab -->
+            <div id="medical-history" class="tab-content">
+                <h2 class="profile-title">Medical History</h2>
+                <form id="medical-history-form">
+                    <div class="form-group">
+                        <label class="form-label">Blood Type</label>
+                        <select class="form-control" id="blood-type">
+                            <option value="">Select Blood Type</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Allergies</label>
+                        <textarea class="form-control" id="allergies" rows="3" placeholder="List any allergies"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Medications</label>
+                        <textarea class="form-control" id="medications" rows="3" placeholder="List current medications"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Past Surgeries</label>
+                        <textarea class="form-control" id="surgeries" rows="3" placeholder="List past surgeries"></textarea>
+                    </div>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Change Password Tab -->
+            <div id="change-password" class="tab-content">
+                <h2 class="profile-title">Change Password</h2>
+                <form id="password-form">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current-password" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new-password" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm-password" placeholder="Confirm new password">
+                    </div>
+                    <button type="submit" class="save-btn">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.currentTarget.classList.add('active');
+        }
+
+        // Profile picture upload handling
+        document.getElementById('profile-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-image').src = e.target.result;
+                    // Here you would typically upload the file to your server
+                    uploadProfilePicture(file);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Function to handle profile picture upload to server
+        async function uploadProfilePicture(file) {
+            try {
+                const formData = new FormData();
+                formData.append('profile_picture', file);
+
+                const response = await fetch('/api/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Profile picture updated successfully!');
+                } else {
+                    throw new Error('Failed to upload profile picture');
+                }
+            } catch (error) {
+                alert('Error uploading profile picture: ' + error.message);
+            }
+        }
+
+        // Form submission handlers
+        document.getElementById('personal-info-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            // Add your form submission logic here
+            alert('Personal information saved!');
+        });
+
+        document.getElementById('medical-history-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            // Add your form submission logic here
+            alert('Medical history saved!');
+        });
+
+        document.getElementById('password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            // Add your password update logic here
+            alert('Password updated!');
+        });
+    </script>
+</body>
+</html>

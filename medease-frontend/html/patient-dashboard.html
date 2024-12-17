@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemedicine Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #007BFF;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .welcome-section h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        #appointments-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #007BFF;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .appointment-icon {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 50%;
+            color: #007BFF;
+            font-size: 1.5rem;
+        }
+
+        .appointment-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .appointment-doctor {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .appointment-time {
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reschedule-btn {
+            background-color: #f8f9fa;
+            color: #666;
+        }
+
+        .reschedule-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .cancel-btn {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .cancel-btn:hover {
+            background-color: #fecaca;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .quick-actions button {
+            padding: 1.2rem;
+            background-color: #28A745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .quick-actions button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .quick-actions a {
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .appointment-card {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .appointment-icon {
+                margin: 0 auto;
+            }
+
+            .appointment-actions {
+                justify-content: center;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Patient Dashboard</h1>
+    </div>
+    <div class="container">
+        <div class="welcome-section">
+            <h2>Welcome, [Patient Name]!</h2>
+            <p>Your upcoming appointments:</p>
+            <ul id="appointments-list">
+                <!-- Appointments will be listed here -->
+            </ul>
+        </div>
+        <div class="quick-actions">
+            <button onclick="bookAppointment()">
+                <i class="fas fa-calendar-plus"></i>
+                <a href="patient-appointment-booking-page.html">Book New Appointment</a>
+            </button>
+            <button onclick="viewHistory()">
+                <i class="fas fa-history"></i>
+                View Appointment History
+            </button>
+            <button onclick="editProfile()">
+                <i class="fas fa-user-edit"></i>
+                <a href="patient-settings.html">Edit Profile</a>
+            </button>
+        </div>
+    </div>
+    <script>
+        // Enhanced appointment data structure
+        const appointments = [
+            {
+                doctor: 'Dr. Smith',
+                specialty: 'Cardiologist',
+                date: 'December 10, 2024',
+                time: '10:00 AM',
+                location: 'Virtual Consultation'
+            },
+            {
+                doctor: 'Dr. Lee',
+                specialty: 'Dermatologist',
+                date: 'December 15, 2024',
+                time: '2:00 PM',
+                location: 'Virtual Consultation'
+            }
+        ];
+
+        // Function to display upcoming appointments
+        function displayAppointments() {
+            const appointmentsList = document.getElementById('appointments-list');
+            appointmentsList.innerHTML = '';
+            
+            appointments.forEach(appointment => {
+                const listItem = document.createElement('li');
+                listItem.className = 'appointment-card';
+                
+                listItem.innerHTML = `
+                    <div class="appointment-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="appointment-details">
+                        <div class="appointment-doctor">${appointment.doctor} - ${appointment.specialty}</div>
+                        <div class="appointment-time">
+                            <i class="far fa-calendar"></i> ${appointment.date}
+                        </div>
+                        <div class="appointment-time">
+                            <i class="far fa-clock"></i> ${appointment.time}
+                        </div>
+                        <div class="appointment-time">
+                            <i class="fas fa-video"></i> ${appointment.location}
+                        </div>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="action-button reschedule-btn" onclick="rescheduleAppointment()">
+                            <i class="fas fa-calendar-alt"></i>
+                            Reschedule
+                        </button>
+                        <button class="action-button cancel-btn" onclick="cancelAppointment()">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                    </div>
+                `;
+                
+                appointmentsList.appendChild(listItem);
+            });
+        }
+
+        // Call displayAppointments on page load
+        document.addEventListener('DOMContentLoaded', displayAppointments);
+
+        // Quick action button functions (to be implemented)
+        function bookAppointment() {
+            // Logic for booking a new appointment
+            alert('Book New Appointment clicked!');
+        }
+
+        function viewHistory() {
+            // Logic for viewing appointment history
+            alert('View Appointment History clicked!');
+        }
+
+        function editProfile() {
+            // Logic for editing the profile
+            alert('Edit Profile clicked!');
+        }
+
+        function rescheduleAppointment() {
+            // Logic for rescheduling an appointment
+            alert('Reschedule Appointment clicked!');
+        }
+
+        function cancelAppointment() {
+            // Logic for canceling an appointment
+            alert('Cancel Appointment clicked!');
+        }
+    </script>
+</body>
+</html>

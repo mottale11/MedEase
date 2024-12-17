@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>User Management - MedEase Admin</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                background-color: #f8f9fa;
+                color: #333;
+            }
+
+            .header {
+                background-color: #007BFF;
+                color: white;
+                padding: 1.5rem 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav a {
+                color: white;
+                text-decoration: none;
+                margin-left: 1.5rem;
+                font-weight: 500;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 2rem auto;
+                padding: 0 2rem;
+            }
+
+            .search-section {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 12px;
+                margin-bottom: 2rem;
+                display: grid;
+                grid-template-columns: 1fr auto auto;
+                gap: 1rem;
+            }
+
+            .search-box {
+                position: relative;
+            }
+
+            .search-box input {
+                width: 100%;
+                padding: 0.8rem 1rem 0.8rem 2.5rem;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+            }
+
+            .search-box i {
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #666;
+            }
+
+            select {
+                padding: 0.8rem;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+            }
+
+            .add-btn {
+                background: #007BFF;
+                color: white;
+                padding: 0.8rem 1.5rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            .users-table {
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th, td {
+                padding: 1rem;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+
+            th {
+                background-color: #f8f9fa;
+                font-weight: 600;
+            }
+
+            .status-badge {
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+            }
+
+            .status-active {
+                background: #d4edda;
+                color: #28a745;
+            }
+
+            .status-inactive {
+                background: #f8d7da;
+                color: #dc3545;
+            }
+
+            .action-btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                margin-right: 0.5rem;
+            }
+
+            .btn-edit {
+                background: #e3f2fd;
+                color: #007BFF;
+            }
+
+            .btn-deactivate {
+                background: #fff5f5;
+                color: #dc3545;
+            }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-top: 2rem;
+            }
+
+            .pagination button {
+                padding: 0.5rem 1rem;
+                border: 1px solid #ddd;
+                background: white;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+            @media (max-width: 1024px) {
+                .search-section {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .header {
+                    flex-direction: column;
+                    text-align: center;
+                }
+                
+                .users-table {
+                    overflow-x: auto;
+                }
+
+                table {
+                    min-width: 800px;
+                }
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="header">
+            <h1>User Management</h1>
+            <nav>
+                <a href="admin-dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="admin-profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="container">
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users..." onkeyup="searchUsers()">
+                </div>
+                <select onchange="filterUsers()">
+                    <option value="all">All Users</option>
+                    <option value="doctors">Doctors</option>
+                    <option value="patients">Patients</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+                <button class="add-btn">
+                    <i class="fas fa-user-plus"></i> Add New User
+                </button>
+            </div>
+
+            <div class="users-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Table content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>...</button>
+                <button>10</button>
+            </div>
+        </div>
+
+        <script>
+            const users = [
+                {
+                    id: "DOC001",
+                    name: "Dr. John Smith",
+                    email: "john.smith@medease.com",
+                    role: "Doctor",
+                    status: "Active",
+                    lastActive: "2024-12-09 08:30"
+                },
+                {
+                    id: "PAT001",
+                    name: "Sarah Johnson",
+                    email: "sarah.j@email.com",
+                    role: "Patient",
+                    status: "Active",
+                    lastActive: "2024-12-08 15:45"
+                },
+                {
+                    id: "DOC002",
+                    name: "Dr. Emily Davis",
+                    email: "emily.davis@medease.com",
+                    role: "Doctor",
+                    status: "Inactive",
+                    lastActive: "2024-12-07 11:20"
+                }
+            ];
+
+            function populateTable(users) {
+                const tableBody = document.getElementById('users-table-body');
+                tableBody.innerHTML = '';
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            <span class="status-badge status-${user.status.toLowerCase()}">
+                                ${user.status}
+                            </span>
+                        </td>
+                        <td>${user.lastActive}</td>
+                        <td>
+                            <button class="action-btn btn-edit" onclick="editUser('${user.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn btn-deactivate" onclick="toggleStatus('${user.id}')">
+                                <i class="fas fa-user-slash"></i> 
+                                ${user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function searchUsers() {
+                const searchInput = document.querySelector('.search-box input').value.toLowerCase();
+                const filteredUsers = users.filter(user => 
+                    user.name.toLowerCase().includes(searchInput) ||
+                    user.email.toLowerCase().includes(searchInput) ||
+                    user.id.toLowerCase().includes(searchInput)
+                );
+                populateTable(filteredUsers);
+            }
+
+            function filterUsers() {
+                const filterValue = document.querySelector('select').value;
+                let filteredUsers = users;
+
+                switch(filterValue) {
+                    case 'doctors':
+                        filteredUsers = users.filter(user => user.role === 'Doctor');
+                        break;
+                    case 'patients':
+                        filteredUsers = users.filter(user => user.role === 'Patient');
+                        break;
+                    case 'active':
+                        filteredUsers = users.filter(user => user.status === 'Active');
+                        break;
+                    case 'inactive':
+                        filteredUsers = users.filter(user => user.status === 'Inactive');
+                        break;
+                }
+
+                populateTable(filteredUsers);
+            }
+
+            function editUser(userId) {
+                alert(`Edit user with ID: ${userId}`);
+            }
+
+            function toggleStatus(userId) {
+                alert(`Toggle status for user with ID: ${userId}`);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                populateTable(users);
+            });
+
+            // send request to server
+            const logoutButton = document.querySelector('a[href="admin-login.html"]');
+            const logoutLink = logoutButton.getAttribute('href');
+            logoutButton.addEventListener('click', function() {
+                fetch(logoutLink, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

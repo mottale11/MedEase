@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - MedEase</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+        .back-to-home {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .back-to-home a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .back-to-home a:hover {
+            text-decoration: underline;
+        }
+        .forgot-password {
+            text-align: right;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+        }
+        .forgot-password a {
+            color: #666;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            color: var(--primary-color);
+        }
+        .login-icon {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+        .login-icon i {
+            font-size: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="home">
+        <nav>
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <div class="login-container">
+        <div class="login-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <h2 style="text-align: center; margin-bottom: 2rem;">Doctor Login</h2>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error-message" id="usernameError">Please enter your username</div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError">Please enter your password</div>
+            </div>
+            <div class="forgot-password">
+                <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <div class="back-to-home">
+            <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(err => err.style.display = 'none');
+            
+            // Get form values
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Validation
+            let isValid = true;
+            
+            if (username.trim().length < 1) {
+                document.getElementById('usernameError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (password.length < 1) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // send request to server
+                const response = fetch('/api/doctor/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'doctor-dashboard.html';
+                    } else {
+                        alert(data.message);
+                    }
+                });
+
+                const data = response.json();
+                if (data.success) {
+                    window.location.href = 'doctor-dashboard.html';
+                } else {
+                    alert(data.message);
+                }
+            }
+            
+            return false;
+        }
+    </script>
+</body>
+</html>

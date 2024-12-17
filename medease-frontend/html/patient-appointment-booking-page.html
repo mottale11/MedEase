@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 2rem;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .button {
+            padding: 0.5rem 1rem;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .loading-spinner.active {
+            display: inline-block;
+        }
+        .message {
+            display: none;
+        }
+        .message.success {
+            color: green;
+        }
+        .message.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book an Appointment</h1>
+        <div class="step active" id="step1">
+            <h2>Select Appointment Type</h2>
+            <select id="appointment-type">
+                <option value="general">General Consultation</option>
+                <option value="specialist">Specialist Visit</option>
+            </select>
+            <button class="button" onclick="nextStep()">Next</button>
+        </div>
+        <div class="step" id="step2">
+            <h2>Choose a Doctor</h2>
+            <div id="doctors-list">
+                <!-- Doctor profiles will be generated here -->
+            </div>
+            <button class="button" onclick="nextStep()">Next</button>
+        </div>
+        <div class="step" id="step3">
+            <h2>Select Date & Time</h2>
+            <input type="date" id="appointment-date">
+            <input type="time" id="appointment-time">
+            <button class="button" onclick="nextStep()">Next</button>
+        </div>
+        <div class="step" id="step4">
+            <h2>Confirm Appointment</h2>
+            <div id="appointment-summary">
+                <!-- Appointment summary will be shown here -->appointment
+            </div>
+            <button class="button" onclick="confirmAppointment()">Confirm</button>
+        </div>
+        <div class="loading-spinner" id="loading-spinner">Loading...</div>
+        <div class="message success" id="success-message">Appointment booked successfully!</div>
+        <div class="message error" id="error-message">An error occurred while booking the appointment. Please try again.</div>
+    </div>
+    <script>
+        let currentStep = 1;
+        const steps = document.querySelectorAll('.step');
+
+        function nextStep() {
+            if (currentStep < steps.length) {
+                steps[currentStep - 1].classList.remove('active');
+                steps[currentStep].classList.add('active');
+                currentStep++;
+            }
+        }
+
+        const doctors = [
+            { id: 1, name: 'Dr. Smith', specialty: 'General Practitioner', rating: 4.5, profilePic: 'doctor1.jpg' },
+            { id: 2, name: 'Dr. Lee', specialty: 'Cardiologist', rating: 4.8, profilePic: 'doctor2.jpg' },
+            // Add more doctors as needed
+        ];
+
+        function displayDoctors() {
+            const doctorsList = document.getElementById('doctors-list');
+            doctorsList.innerHTML = '';
+            doctors.forEach(doctor => {
+                const doctorDiv = document.createElement('div');
+                doctorDiv.innerHTML = `
+                    <img src="${doctor.profilePic}" alt="${doctor.name}">
+                    <h3>${doctor.name}</h3>
+                    <p>Specialty: ${doctor.specialty}</p>
+                    <p>Rating: ${doctor.rating}</p>
+                    <button onclick="selectDoctor(${doctor.id})">Select</button>
+                `;
+                doctorsList.appendChild(doctorDiv);
+            });
+        }
+
+        function selectDoctor(doctorId) {
+            // Logic to select doctor
+            console.log('Doctor selected:', doctorId);
+            nextStep();
+        }
+
+        function confirmAppointment() {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+
+            loadingSpinner.classList.add('active');
+
+            // Simulate API call to book appointment
+            setTimeout(() => {
+                loadingSpinner.classList.remove('active');
+                const success = Math.random() > 0.5; // Randomly simulate success or error
+                if (success) {
+                    successMessage.style.display = 'block';
+                } else {
+                    errorMessage.style.display = 'block';
+                }
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', displayDoctors);
+    </script>
+</body>
+</html>

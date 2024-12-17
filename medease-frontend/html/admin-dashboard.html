@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin - dashboard</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f6fa;
+            padding: 2rem;
+        }
+
+        .header {
+            background-color: #007BFF;
+            border-radius: 5px;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .header nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .header nav a:hover {
+            opacity: 0.8;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            color: #4a90e2;
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .actions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .action-title a {
+            text-decoration: none;
+        }
+
+        .action-description {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <body>
+        <section>
+            <div class="header">
+                <h1>Admin Dashboard</h1>
+                <nav>
+                    <a href="index.html"><i class="fas fa-home"></i>Home</a>
+                    <a href="admin-users-see.html">Users</a>
+                    <a href="admin-reports-see.html">Reports</a>
+                    <a href="admin-login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </nav>
+            </div>
+        </section>
+        <section>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <i class="fas fa-users action-icon" style="color: orangered;"></i>
+                    <div class="metric-value">1,234</div>
+                    <div class="metric-label">Total Patients</div>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-user-md action-icon" style="color: #0998d1;"></i>
+                    <div class="metric-value">156</div>
+                    <div class="metric-label">Total Doctors</div>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-calendar-check action-icon" style="color: #1fda06;"></i>
+                    <div class="metric-value">89</div>
+                    <div class="metric-label">Today's Appointments</div>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-chart-line action-icon" style="color: maroon;"></i>
+                    <div class="metric-value">95%</div>
+                    <div class="metric-label">System Uptime</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-container">
+            <canvas id="activityChart"></canvas>
+        </section>
+
+        <section class="actions-container">
+            <div class="action-card" onclick="manageUsers()">
+                <i class="fas fa-users action-icon"></i>
+                <div class="action-title">
+                    <a href="admin-users-see.html">Manage Users</a>
+                </div>
+                <div class="action-description">Add, edit, or remove patients and doctors</div>
+            </div>
+            <div class="action-card" onclick="manageAppointments()">
+                <i class="fas fa-calendar-alt action-icon" style="color: #1fda06;"></i>
+                <div class="action-title">Manage Appointments</div>
+                <div class="action-description">View and manage all appointments</div>
+            </div>
+            <div class="action-card" onclick="generateReports()">
+                <i class="fas fa-chart-bar action-icon" style="color: rgb(114, 101, 101);"></i>
+                <div class="action-title">Generate Reports</div>
+                <div class="action-description">Create and export system reports</div>
+            </div>
+            <div class="action-card" onclick="viewLogs()">
+                <i class="fas fa-history action-icon" style="color: red;"></i>
+                <div class="action-title">System Logs</div>
+                <div class="action-description">View system activity and logs</div>
+            </div>
+        </section>
+
+        <script>
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Monthly Appointments',
+                        data: [65, 59, 80, 81, 56, 55, 49, 53, 75, 84, 65, 62],
+                        borderColor: '#007BFF',
+                        tension: 0.1
+                    }]
+                }
+            });
+
+            function manageUsers() {
+                alert('Opening user management interface...');
+            }
+            function viewLogs() {
+                alert('Opening system logs...');
+            }
+            function manageAppointments() {
+                alert('Opening appointment management interface...');
+            }
+            function generateReports() {
+                alert('Generating reports...');
+            }
+            function manageDoctors() {
+                alert('Opening doctor management interface...');
+            }
+            function managePatients() {
+                alert('Opening patient management interface...');
+            }
+
+            // send request to server
+            const logoutButton = document.querySelector('a[href="admin-login.html"]');
+            const logoutLink = logoutButton.getAttribute('href');
+            logoutButton.addEventListener('click', function() {
+                fetch(logoutLink, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Manage Schedule - MedEase</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css' rel='stylesheet' />
+        <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css' rel='stylesheet' />
+        <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.css' rel='stylesheet' />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                background-color: #f8f9fa;
+                color: #333;
+            }
+
+            .header {
+                background-color: #007BFF;
+                color: white;
+                padding: 1.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .header nav a {
+                color: white;
+                text-decoration: none;
+                margin-left: 1.5rem;
+                font-weight: 500;
+                transition: opacity 0.2s;
+            }
+
+            .header nav a:hover {
+                opacity: 0.8;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 2rem auto;
+                padding: 0 2rem;
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 2rem;
+            }
+
+            .calendar-section {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            }
+
+            .details-section {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                height: fit-content;
+            }
+
+            .appointment-list {
+                margin-top: 1.5rem;
+            }
+
+            .appointment-card {
+                background: white;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .appointment-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+
+            .appointment-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+
+            .patient-name {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            .appointment-time {
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            .appointment-details {
+                margin: 1rem 0;
+            }
+
+            .detail-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+                color: #666;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: background-color 0.2s;
+            }
+
+            .reschedule-btn {
+                background-color: #007bff;
+                color: white;
+            }
+
+            .reschedule-btn:hover {
+                background-color: #0056b3;
+            }
+
+            .cancel-btn {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .cancel-btn:hover {
+                background-color: #c82333;
+            }
+
+            .legend {
+                display: flex;
+                gap: 2rem;
+                padding: 1rem;
+                background: white;
+                border-radius: 8px;
+                margin-top: 1rem;
+            }
+
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .legend-color {
+                width: 20px;
+                height: 20px;
+                border-radius: 4px;
+            }
+
+            .available { background-color: #28a745; }
+            .booked { background-color: #007bff; }
+            .blocked { background-color: #dc3545; }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                justify-content: center;
+                align-items: center;
+            }
+
+            .modal-content {
+                background: white;
+                padding: 2rem;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 500px;
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .close-btn {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #666;
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    grid-template-columns: 1fr;
+                    padding: 1rem;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                }
+
+                .legend {
+                    flex-wrap: wrap;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Manage Schedule</h1>
+            <nav>
+                <a href="doctor-dashboard.html">Dashboard</a>
+                <a href="index.html">Home</a>
+            </nav>
+        </div>
+
+        <div class="container">
+            <div class="calendar-section">
+                <div id="calendar"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color available"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color booked"></div>
+                        <span>Booked</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color blocked"></div>
+                        <span>Blocked</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h2>Upcoming Appointments</h2>
+                <div class="appointment-list" id="appointment-list">
+                    <!-- Appointments will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reschedule Modal -->
+        <div id="reschedule-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Reschedule Appointment</h2>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <form id="reschedule-form">
+                    <div class="form-group">
+                        <label>New Date and Time</label>
+                        <input type="datetime-local" class="form-control" id="new-datetime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reason for Rescheduling</label>
+                        <textarea class="form-control" id="reschedule-reason" rows="3" required></textarea>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit" class="btn reschedule-btn">Confirm Reschedule</button>
+                        <button type="button" class="btn cancel-btn" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.js'></script>
+        <script>
+            // Sample appointments data
+            const appointments = [
+                {
+                    id: '1',
+                    title: 'John Doe - Checkup',
+                    start: '2024-01-01T10:00:00',
+                    end: '2024-01-01T11:00:00',
+                    status: 'booked',
+                    patientDetails: {
+                        name: 'John Doe',
+                        contact: '+254769694900',
+                        reason: 'Regular checkup',
+                        email: 'john.doe@email.com'
+                    }
+                },
+                {
+                    id: '2',
+                    title: 'Jane Smith - Follow-up',
+                    start: '2024-01-02T14:00:00',
+                    end: '2024-01-02T15:00:00',
+                    status: 'booked',
+                    patientDetails: {
+                        name: 'Jane Smith',
+                        contact: '+254712345678',
+                        reason: 'Follow-up consultation',
+                        email: 'jane.smith@email.com'
+                    }
+                }
+            ];
+
+            // Initialize calendar
+            document.addEventListener('DOMContentLoaded', function() {
+                const calendarEl = document.getElementById('calendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: appointments,
+                    editable: true,
+                    eventClick: function(info) {
+                        showAppointmentDetails(info.event);
+                    },
+                    eventDrop: function(info) {
+                        handleReschedule(info.event);
+                    }
+                });
+                calendar.render();
+                displayAppointments();
+            });
+
+            // Display appointments in the list
+            function displayAppointments() {
+                const listEl = document.getElementById('appointment-list');
+                listEl.innerHTML = '';
+
+                appointments.forEach(appointment => {
+                    const date = new Date(appointment.start);
+                    const card = document.createElement('div');
+                    card.className = 'appointment-card';
+                    card.innerHTML = `
+                        <div class="appointment-header">
+                            <span class="patient-name">${appointment.patientDetails.name}</span>
+                            <span class="appointment-time">${date.toLocaleString()}</span>
+                        </div>
+                        <div class="appointment-details">
+                            <div class="detail-item">
+                                <i class="fas fa-phone"></i>
+                                ${appointment.patientDetails.contact}
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-envelope"></i>
+                                ${appointment.patientDetails.email}
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-notes-medical"></i>
+                                ${appointment.patientDetails.reason}
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn reschedule-btn" onclick="openRescheduleModal('${appointment.id}')">
+                                <i class="fas fa-calendar-alt"></i>
+                                Reschedule
+                            </button>
+                            <button class="btn cancel-btn" onclick="cancelAppointment('${appointment.id}')">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            }
+
+            function openRescheduleModal(appointmentId) {
+                const modal = document.getElementById('reschedule-modal');
+                modal.style.display = 'flex';
+                modal.dataset.appointmentId = appointmentId;
+            }
+
+            function closeModal() {
+                document.getElementById('reschedule-modal').style.display = 'none';
+            }
+
+            function handleReschedule(event) {
+                if (confirm("Are you sure you want to reschedule this appointment?")) {
+                    // Here you would typically make an API call to update the appointment
+                    alert("Appointment rescheduled successfully!");
+                    displayAppointments();
+                } else {
+                    calendar.refetchEvents();
+                }
+            }
+
+            function cancelAppointment(appointmentId) {
+                if (confirm("Are you sure you want to cancel this appointment?")) {
+                    // Here you would typically make an API call to cancel the appointment
+                    appointments = appointments.filter(a => a.id !== appointmentId);
+                    alert("Appointment cancelled successfully!");
+                    displayAppointments();
+                    calendar.refetchEvents();
+                }
+            }
+
+            // Form submission handler
+            document.getElementById('reschedule-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const appointmentId = document.getElementById('reschedule-modal').dataset.appointmentId;
+                const newDateTime = document.getElementById('new-datetime').value;
+                const reason = document.getElementById('reschedule-reason').value;
+
+                // Here you would typically make an API call to update the appointment
+                alert("Appointment rescheduled successfully!");
+                closeModal();
+                displayAppointments();
+                calendar.refetchEvents();
+            });
+
+            // send request to server
+            const logoutButton = document.querySelector('a[href="doctor-login.html"]');
+            const logoutLink = logoutButton.getAttribute('href');
+            logoutButton.addEventListener('click', function() {
+                fetch(logoutLink, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+
+            const response = fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = 'index.html';
+                }
+            });
+        </script>
+    </body>
+</html>

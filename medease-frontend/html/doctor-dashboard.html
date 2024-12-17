@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - MedEase</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #007BFF;
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .appointments-icon { 
+            background: #e3f2fd;
+            color: #007BFF;
+        }
+
+        .reviews-icon {
+            background: #fff3cd;
+            color: #ffc107;
+        }
+
+        .slots-icon {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .appointment-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .patient-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .appointment-time {
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .quick-actions {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: #007BFF;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .action-btn a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            nav {
+                margin-top: 1rem;
+            }
+
+            nav a {
+                margin: 0 0.75rem;
+            }
+
+            .appointment-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Doctor Dashboard</h1>
+            <p>Welcome back, Dr. Smith</p>
+        </div>
+        <nav>
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="doctor-profile.html"><i class="fas fa-user-md"></i> Profile</a>
+            <a href="doctor-login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <!-- Daily Statistics -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-icon appointments-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Today's Appointments</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon reviews-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Pending Reviews</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon slots-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Available Slots</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Daily Overview Section -->
+            <div class="section">
+                <h2>Today's Appointments</h2>
+                <div id="appointments-list">
+                    <!-- Appointments will be populated here -->
+                </div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="section">
+                <h2>Quick Actions</h2>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="manageAvailability()">
+                        <i class="fas fa-calendar-alt"></i>
+                        Manage Availability
+                    </button>
+                    <button class="action-btn">
+                        <a href="doctor-Manage-Schedule-Page.html">
+                            <i class="fas fa-calendar-day"></i>
+                            Manage Appointments
+                        </a>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample appointment data
+        const appointments = [
+            {
+                patientName: "Jane Smith",
+                time: "09:00 AM",
+                type: "Regular Checkup",
+                status: "Confirmed",
+                patientId: "PT001",
+                duration: "30 mins"
+            },
+            {
+                patientName: "John Davis",
+                time: "10:30 AM",
+                type: "Follow-up",
+                status: "Confirmed",
+                patientId: "PT002",
+                duration: "45 mins"
+            },
+            {
+                patientName: "Sarah Wilson",
+                time: "02:00 PM",
+                type: "New Patient",
+                status: "Confirmed",
+                patientId: "PT003",
+                duration: "60 mins"
+            }
+        ];
+
+        // Function to display appointments
+        function displayAppointments() {
+            const appointmentsList = document.getElementById('appointments-list');
+            appointmentsList.innerHTML = '';
+
+            appointments.forEach(appointment => {
+                const appointmentCard = document.createElement('div');
+                appointmentCard.className = 'appointment-card';
+                appointmentCard.innerHTML = `
+                    <div class="appointment-header">
+                        <span class="patient-name">${appointment.patientName}</span>
+                        <span class="appointment-time">
+                            <i class="far fa-clock"></i>
+                            ${appointment.time}
+                        </span>
+                    </div>
+                    <div class="appointment-details">
+                        <div class="detail-item">
+                            <i class="fas fa-user-tag"></i>
+                            ID: ${appointment.patientId}
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-hourglass-half"></i>
+                            Duration: ${appointment.duration}
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-stethoscope"></i>
+                            ${appointment.type}
+                        </div>
+                        <div class="detail-item">
+                            <span class="status-badge status-confirmed">
+                                <i class="fas fa-check-circle"></i>
+                                ${appointment.status}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                appointmentsList.appendChild(appointmentCard);
+            });
+        }
+
+        // Quick action functions
+        function manageAvailability() {
+            // Add functionality to manage availability
+            alert('Opening availability management...');
+        }
+
+        // Load appointments when page loads
+        document.addEventListener('DOMContentLoaded', displayAppointments);
+
+        // send request to server
+        const response = fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
