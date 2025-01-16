@@ -1,0 +1,7 @@
+flask==2.3.2
+flask-sqlalchemy==3.0.3
+flask-cors==4.0.0
+flask-bcrypt==1.0.1
+python-dotenv==1.0.0
+flask-jwt-extended==4.5.2
+marshmallow==3.19.1

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Appointment Management</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-bg: #ecf0f1;
+            --white: #ffffff;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .admin-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* header nav */
+        .admin-header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+
+        /* Appointment Section */
+        .appointment-section {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        /* Filters */
+        .appointment-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background-color: var(--accent-color);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: var(--white);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Appointment Table */
+        .appointment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .appointment-table th,
+        .appointment-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .appointment-table th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .appointment-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(16, 12, 231, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-body label {
+            font-weight: 600;
+        }
+
+        .modal-body input,
+        .modal-body select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .close-btn {
+            color: var(--danger-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .appointment-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 25% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="admin-header">
+            <div>
+                <h1>Appointment Management Dashboard</h1>
+            </div>
+            <nav>
+                <a href="admin-dashboard.html">Dashboard</a>
+                <a href="index.html">Logout</a>
+            </nav>
+        </header>
+
+        <section class="appointment-section">
+            <div class="appointment-filters">
+                <div class="filter-group">
+                    <label for="date-filter">Filter by Date:</label>
+                    <input type="date" id="date-filter">
+                </div>
+                <div class="filter-group">
+                    <label for="status-filter">Filter by Status:</label>
+                    <select id="status-filter">
+                        <option value="">All Appointments</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="openBookAppointmentModal()">
+                    Book New Appointment
+                </button>
+            </div>
+
+            <table class="appointment-table">
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="appointments-list">
+                    <tr>
+                        <td>Emily Johnson</td>
+                        <td>Dr. Michael Chen</td>
+                        <td>2025-02-15</td>
+                        <td>10:30 AM</td>
+                        <td>Scheduled</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="cancelAppointment(this)">Cancel</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>David Rodriguez</td>
+                        <td>Dr. Sarah Williams</td>
+                        <td>2025-02-16</td>
+                        <td>02:45 PM</td>
+                        <td>Completed</td>
+                        <td>
+                            <button class="btn btn-danger" disabled>Cancel</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Book Appointment Modal -->
+        <div id="bookAppointmentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Book New Appointment</h2>
+                    <span class="close-btn" onclick="closeModal('bookAppointmentModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="patient-select">Patient:</label>
+                        <select id="patient-select">
+                            <option value="">Select Patient</option>
+                            <option value="emily">Emily Johnson</option>
+                            <option value="david">David Rodriguez</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="doctor-select">Doctor:</label>
+                        <select id="doctor-select">
+                            <option value="">Select Doctor</option>
+                            <option value="michael">Dr. Michael Chen</option>
+                            <option value="sarah">Dr. Sarah Williams</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="appointment-date">Date:</label>
+                        <input type="date" id="appointment-date">
+                    </div>
+                    <div>
+                        <label for="appointment-time">Time:</label>
+                        <input type="time" id="appointment-time">
+                    </div>
+                    <button class="btn btn-primary" onclick="bookAppointment()">Book Appointment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add base URL for API calls
+        const API_BASE_URL = 'http://localhost:5000';   
+        // Pagination
+        let currentPage = 1;
+        let totalPages = 1;
+        async function fetchAppointments(page = 1) {
+            try {
+                const response = await fetch(`/appointments?page=${page}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                const data = await response.json();
+                
+                const appointmentsList = document.getElementById('appointments-list');
+                appointmentsList.innerHTML = ''; // Clear existing rows
+                
+                data.appointments.forEach(appt => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${appt.patient}</td>
+                        <td>${appt.doctor}</td>
+                        <td>${new Date(appt.date).toLocaleDateString()}</td>
+                        <td>${new Date(appt.date).toLocaleTimeString()}</td>
+                        <td>${appt.status}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="cancelAppointment(${appt.id})">Cancel</button>
+                        </td>
+                    `;
+                    appointmentsList.appendChild(row);
+                });
+                
+                // Pagination logic here
+                updatePaginationControls(data.current_page, data.total_pages);
+            } catch (error) {
+                console.error('Error fetching appointments:', error);
+                alert('Failed to load appointments');
+            }
+        }
+        
+        async function bookAppointment() {
+            const patient = document.getElementById('patient-select');
+            const doctor = document.getElementById('doctor-select');
+            const date = document.getElementById('appointment-date');
+            const time = document.getElementById('appointment-time');
+        
+            if (patient.value && doctor.value && date.value && time.value) {
+                try {
+                    const response = await fetch('/appointments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        },
+                        body: JSON.stringify({
+                            patient_id: patient.value,
+                            doctor_id: doctor.value,
+                            date: new Date(`${date.value}T${time.value}`).toISOString(),
+                            status: 'Scheduled'
+                        })
+                    });
+        
+                    if (response.ok) {
+                        closeModal('bookAppointmentModal');
+                        fetchAppointments(); // Refresh appointments
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Booking failed: ${errorData.error}`);
+                    }
+                } catch (error) {
+                    console.error('Booking error:', error);
+                    alert('Failed to book appointment');
+                }
+            } else {
+                alert('Please fill in all appointment details');
+            }
+        }
+        
+        async function cancelAppointment(appointmentId) {
+            try {
+                const response = await fetch(`/appointments/${appointmentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    fetchAppointments(); // Refresh appointments
+                } else {
+                    const errorData = await response.json();
+                    alert(`Cancellation failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                console.error('Cancellation error:', error);
+                alert('Failed to cancel appointment');
+            }
+        }
+        
+        // Login function
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+        
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+        
+                const data = await response.json();
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    alert('Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed');
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = 'admin-login.html';
+            } else {
+                fetchAppointments();
+            }
+        });
+    </script>
+</body>
+</html>
