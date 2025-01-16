@@ -21,19 +21,38 @@ Date: December 15, 2024
 
 Project Name: MedEase
 
-Objective: To simplify doctor appointment booking for patients, allow doctors to manage their schedules, and enable administrators to oversee the system.
+Objective: To simplify doctor appointment booking for patients, allows patient to book appointment, doctors to manage their schedules, and enable administrators to oversee the system.
 
 Tools & Technologies Used:
 
-- Front-end: HTML, CSS
-- Back-end: Node.js, Express, SQL
-- Database: MySQL
+🖥️ Backend Technologies:
+
+1. Programming Language:
+          - Python 3.x
+2. Web Framework:
+          - Flask (Lightweight Python web framework)
+3. Database:
+          - SQLAlchemy (ORM)
+          - SQLite (Default database)
+5. Authentication:
+         - Flask-JWT-Extended (JSON Web Token authentication)
+         - Flask-Bcrypt (Password hashing)
+6. API Development:
+        - RESTful API design
+        - Marshmallow (Data validation and serialization)
+
+Frontend Technologies:
+
+Core Technologies:
+- HTML5
+- CSS3
+- JavaScript
 
 Scope:
 
 - Patients: Book appointments, manage profiles.
 - Doctors: Manage schedules.
-- Administrators: Oversee system activities.
+- Administrators: Oversee system activities, Manage schedules & appointments.
 
 ---
 
@@ -65,6 +84,7 @@ Doctor Features:
 Administrator Features:
 
 - Oversee and Manage Platform Users
+- Manage appointments and schedules
 - Maintain System Data Integrity
 
 ---
